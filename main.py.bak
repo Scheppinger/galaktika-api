@@ -1,0 +1,20 @@
+from fastapi import FastAPI
+from fastapi.responses import Response
+from pydantic import BaseModel
+from typing import Optional
+from chart_svg import generate_radix_svg
+
+app = FastAPI()
+
+class ChartRequest(BaseModel):
+    planets: dict
+    ascendant: Optional[float] = 0.0
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+@app.post("/chart-svg")
+def chart_svg(req: ChartRequest):
+    svg = generate_radix_svg(req.planets, req.ascendant)
+    return Response(content=svg, media_type="image/svg+xml")
